@@ -1,7 +1,9 @@
 const itemForm = document.getElementById('item-form');
 const itemInput = document.getElementById('item-input');
 const itemList= document.getElementById('item-list');
-console.log(itemForm)
+const clearBtn = document.getElementById('clear');
+const itemFilter = document.getElementById('filter');
+console.log(clearBtn)
 
 const addItem = (e) => {
     e.preventDefault();
@@ -21,7 +23,11 @@ const addItem = (e) => {
 
     const button = createButton('remove-item btn-link text-red');
     li.appendChild(button)
+
+    //add the li to the dom
     itemList.appendChild(li);
+
+    checkUI();
     itemInput.value = '';
 }
 
@@ -39,6 +45,43 @@ function createIcon(classes){
     return icon;
 }
 
+function removeItem(e){
+    if(e.target.parentElement.classList.contains('remove-item'))//should only get fired if we click on icon whose parent is a button with a clss of remove-item i.e. when we click on red x
+    {    
+        console.log('click')
+        if(confirm("Are you sure?")){ //confirm returns true if clicked on OK
+            e.target.parentElement.parentElement.remove();
+            checkUI();
+        }
+        //e.target is icon, parent is button, next parent is li
+    }
+}
+
+function clearItems(){
+    if(confirm("Are you sure that you want to clear all items?")){
+        while(itemList.firstChild) { //while item list has any child
+            itemList.removeChild(itemList.firstChild);
+        }
+        checkUI();
+    }
+}
+
+function checkUI() { //clear button and the filter must only be visible when there are any items in the list, if not assigned them to none
+    const items =itemList.querySelectorAll('li');
+    if(items.length === 0){
+        clearBtn.style.display = 'none';
+        itemFilter.style.display = 'none';
+    }
+
+    else{
+        clearBtn.style.display = 'block';
+        itemFilter.style.display = 'block';
+    }
+}
 
 //eventListeners
-itemForm.addEventListener('submit',addItem)
+itemForm.addEventListener('submit',addItem);
+itemList.addEventListener('click',removeItem);
+clearBtn.addEventListener('click',clearItems);
+
+checkUI();
