@@ -5,7 +5,13 @@ const clearBtn = document.getElementById('clear');
 const itemFilter = document.getElementById('filter');
 console.log(clearBtn)
 
-const addItem = (e) => {
+function displayItems() {
+    const itemsFromStorage = getItemsFromStorage();
+    itemsFromStorage.forEach(item => addItemToDOM(item));
+    checkUI();
+}
+
+const onAddItemSubmit = (e) => {
     e.preventDefault();
 
     const newItem = itemInput.value;//new item is the value im gonna enter in  the text field
@@ -15,10 +21,21 @@ const addItem = (e) => {
         return;
     }
 
+    //create item dom element
+    addItemToDOM(newItem);
+
+    //add item to local storage
+    addItemToStorage(newItem);
+
+    checkUI();
+    itemInput.value = '';
+}
+
+function addItemToDOM(item) {
     //create list item
     const li = document.createElement('li');
     console.log(`new list item is ${li.innerHTML}`)
-    li.appendChild(document.createTextNode(newItem))
+    li.appendChild(document.createTextNode(item))
     console.log(`new list item is after appending ${li.innerHTML}`)
 
     const button = createButton('remove-item btn-link text-red');
@@ -26,9 +43,27 @@ const addItem = (e) => {
 
     //add the li to the dom
     itemList.appendChild(li);
+}
 
-    checkUI();
-    itemInput.value = '';
+function addItemToStorage(item) {
+    let itemsFromStorage = getItemsFromStorage();
+
+    itemsFromStorage.push(item);
+
+    //convert to json string and set to local storage
+    localStorage.setItem('items',JSON.stringify(itemsFromStorage));
+}
+
+function getItemsFromStorage() {
+    let itemsFromStorage;
+    if(localStorage.getItem('items') === null) {
+        itemsFromStorage = [];
+    }
+    else{
+        itemsFromStorage = JSON.parse(localStorage.getItem('items'));
+    }
+
+    return itemsFromStorage;
 }
 
 function createButton(classes){
@@ -94,13 +129,22 @@ function checkUI() { //clear button and the filter must only be visible when the
     }
 }
 
-//eventListeners
-itemForm.addEventListener('submit',addItem);
-itemList.addEventListener('click',removeItem);
-clearBtn.addEventListener('click',clearItems);
-itemFilter.addEventListener('input',filterItems)
+//initialize app
+function init(){
 
-checkUI();
+    //eventListeners
+    itemForm.addEventListener('submit',onAddItemSubmit);
+    itemList.addEventListener('click',removeItem);
+    clearBtn.addEventListener('click',clearItems);
+    itemFilter.addEventListener('input',filterItems);
+    document.addEventListener('DOMContentLoaded',displayItems);
+
+    checkUI();
+}
+
+init();
+
+
 
 //now the problem is that the whatever we add will go away as soon as the page is reloaded, in order to overcome this we'll have to use local storage
 // localStorage.setItem('name','Thanuj Sai');
