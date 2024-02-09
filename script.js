@@ -5,7 +5,13 @@ const clearBtn = document.getElementById('clear');
 const itemFilter = document.getElementById('filter');
 console.log(clearBtn)
 
-const addItem = (e) => {
+function displayItems() {
+    const itemsFromStorage = getItemsFromStorage();
+    itemsFromStorage.forEach(item => addItemToDOM(item));
+    checkUI();
+}
+
+const onAddItemSubmit = (e) => {
     e.preventDefault();
 
     const newItem = itemInput.value;//new item is the value im gonna enter in  the text field
@@ -15,10 +21,21 @@ const addItem = (e) => {
         return;
     }
 
+    //create item dom element
+    addItemToDOM(newItem);
+
+    //add item to local storage
+    addItemToStorage(newItem);
+
+    checkUI();
+    itemInput.value = '';
+}
+
+function addItemToDOM(item) {
     //create list item
     const li = document.createElement('li');
     console.log(`new list item is ${li.innerHTML}`)
-    li.appendChild(document.createTextNode(newItem))
+    li.appendChild(document.createTextNode(item))
     console.log(`new list item is after appending ${li.innerHTML}`)
 
     const button = createButton('remove-item btn-link text-red');
@@ -26,9 +43,27 @@ const addItem = (e) => {
 
     //add the li to the dom
     itemList.appendChild(li);
+}
 
-    checkUI();
-    itemInput.value = '';
+function addItemToStorage(item) {
+    let itemsFromStorage = getItemsFromStorage();
+
+    itemsFromStorage.push(item);
+
+    //convert to json string and set to local storage
+    localStorage.setItem('items',JSON.stringify(itemsFromStorage));
+}
+
+function getItemsFromStorage() {
+    let itemsFromStorage;
+    if(localStorage.getItem('items') === null) {
+        itemsFromStorage = [];
+    }
+    else{
+        itemsFromStorage = JSON.parse(localStorage.getItem('items'));
+    }
+
+    return itemsFromStorage;
 }
 
 function createButton(classes){
@@ -45,16 +80,44 @@ function createIcon(classes){
     return icon;
 }
 
-function removeItem(e){
-    if(e.target.parentElement.classList.contains('remove-item'))//should only get fired if we click on icon whose parent is a button with a clss of remove-item i.e. when we click on red x
-    {    
-        console.log('click')
-        if(confirm("Are you sure?")){ //confirm returns true if clicked on OK
-            e.target.parentElement.parentElement.remove();
-            checkUI();
-        }
-        //e.target is icon, parent is button, next parent is li
+function onClickItem(e) {
+    if(e.target.parentElement.classList.contains('remove-item')){
+        removeItem(e.target.parentElement.parentElement)
     }
+}
+function removeItem(item){
+    if(confirm("are you sure?")){
+        //remove item from dom
+        item.remove();
+
+        //remove item from storage
+        removeItemFromStorage(item.textContent);
+
+        checkUI();
+    }
+}
+
+function removeItemFromStorage(item) {
+    let itemsFromStorage = getItemsFromStorage();
+
+    console.log(`items before deleting are ${JSON.stringify(itemsFromStorage)}`)
+
+    //filter out item to be removed
+    itemsFromStorage = itemsFromStorage.filter((i) => i !== item);
+
+    //or
+    
+    // itemsFromStorage = itemsFromStorage.filter((i) => {
+    //     if(i !== item){
+    //         return i
+    //     }
+    //     console.log(`${i} and ${item}`)
+    // });
+
+    console.log(`items remained after deleting are ${JSON.stringify(itemsFromStorage)}`)
+    //reset to local storage
+    localStorage.setItem('items',JSON.stringify(itemsFromStorage))
+
 }
 
 function clearItems(){
@@ -62,6 +125,9 @@ function clearItems(){
         while(itemList.firstChild) { //while item list has any child
             itemList.removeChild(itemList.firstChild);
         }
+
+        //clear from local storage
+        localStorage.removeItem('items');
         checkUI();
     }
 }
@@ -94,13 +160,22 @@ function checkUI() { //clear button and the filter must only be visible when the
     }
 }
 
-//eventListeners
-itemForm.addEventListener('submit',addItem);
-itemList.addEventListener('click',removeItem);
-clearBtn.addEventListener('click',clearItems);
-itemFilter.addEventListener('input',filterItems)
+//initialize app
+function init(){
 
-checkUI();
+    //eventListeners
+    itemForm.addEventListener('submit',onAddItemSubmit);
+    itemList.addEventListener('click',onClickItem);
+    clearBtn.addEventListener('click',clearItems);
+    itemFilter.addEventListener('input',filterItems);
+    document.addEventListener('DOMContentLoaded',displayItems);
+
+    checkUI();
+}
+
+init();
+
+
 
 //now the problem is that the whatever we add will go away as soon as the page is reloaded, in order to overcome this we'll have to use local storage
 // localStorage.setItem('name','Thanuj Sai');
