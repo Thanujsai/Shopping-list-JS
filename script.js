@@ -66,6 +66,21 @@ function clearItems(){
     }
 }
 
+function filterItems(e) {
+    const items =itemList.querySelectorAll('li');
+    const text = e.target.value.toLowerCase(item => (item));
+    console.log(`text is ${text}`)
+    items.forEach(item => {
+        const itemName = item.firstChild.textContent.toLowerCase();//example in here returns apples
+        if(itemName.indexOf(text) != -1){//if any of the li doesn't have the text it return -1
+            item.style.display = 'flex';
+        }
+        else{
+            item.style.display = 'none';
+        }
+    })
+}
+
 function checkUI() { //clear button and the filter must only be visible when there are any items in the list, if not assigned them to none
     const items =itemList.querySelectorAll('li');
     if(items.length === 0){
@@ -83,5 +98,14 @@ function checkUI() { //clear button and the filter must only be visible when the
 itemForm.addEventListener('submit',addItem);
 itemList.addEventListener('click',removeItem);
 clearBtn.addEventListener('click',clearItems);
+itemFilter.addEventListener('input',filterItems)
 
 checkUI();
+
+//now the problem is that the whatever we add will go away as soon as the page is reloaded, in order to overcome this we'll have to use local storage
+// localStorage.setItem('name','Thanuj Sai');
+// localStorage.setItem('role','AMTS');//even if we reload the page it will still be present
+
+// console.log(localStorage.getItem('name'))
+// // localStorage.removeItem('name')
+// localStorage.clear();
