@@ -3,6 +3,9 @@ const itemInput = document.getElementById('item-input');
 const itemList= document.getElementById('item-list');
 const clearBtn = document.getElementById('clear');
 const itemFilter = document.getElementById('filter');
+const formBtn = itemForm.querySelector('button');
+let isEditMode = false;
+
 console.log(clearBtn)
 
 function displayItems() {
@@ -21,6 +24,15 @@ const onAddItemSubmit = (e) => {
         return;
     }
 
+    //check for edit mode
+    if(isEditMode) {
+        const  itemToEdit = itemList.querySelector('.edit-mode');
+
+        removeItemFromStorage(itemToEdit.textContent);
+        itemToEdit.classList.remove('edit-mode');
+        itemToEdit.remove();
+        isEditMode = false; 
+    }
     //create item dom element
     addItemToDOM(newItem);
 
@@ -82,9 +94,24 @@ function createIcon(classes){
 
 function onClickItem(e) {
     if(e.target.parentElement.classList.contains('remove-item')){
-        removeItem(e.target.parentElement.parentElement)
+        removeItem(e.target.parentElement.parentElement);
+    }
+    else{
+        console.log("1");
+        setItemToEdit(e.target);
     }
 }
+
+function setItemToEdit(item){
+    isEditMode = true;
+
+    itemList.querySelectorAll('li').forEach(i => i.classList.remove('edit-mode'));//only the selected li should turn the color into red, when another element is selected prev selected all li's must go bck to prev state i.e. black
+    item.classList.add('edit-mode');
+    formBtn.innerHTML = '<i class = "fa-solid fa-pen"></i>  Update Item';
+    formBtn.style.backgroundColor = '#228B22';
+    itemInput.value = item.textContent; //the selected attribute comes to the text field
+}
+
 function removeItem(item){
     if(confirm("are you sure?")){
         //remove item from dom
@@ -148,6 +175,9 @@ function filterItems(e) {
 }
 
 function checkUI() { //clear button and the filter must only be visible when there are any items in the list, if not assigned them to none
+
+    itemInput.value = '';
+    
     const items =itemList.querySelectorAll('li');
     if(items.length === 0){
         clearBtn.style.display = 'none';
@@ -158,6 +188,11 @@ function checkUI() { //clear button and the filter must only be visible when the
         clearBtn.style.display = 'block';
         itemFilter.style.display = 'block';
     }
+
+    formBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Add Item';//when update is completed, change update item to add item and make it back t odefault color/button
+    formBtn.style.backgroundColor = '#333';
+
+    isEditMode = false; //when update is completed, the button should be labelled back to add item
 }
 
 //initialize app
