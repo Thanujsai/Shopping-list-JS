@@ -218,7 +218,6 @@ function init(){
     itemForm.addEventListener('submit',onAddItemSubmit);
     itemList.addEventListener('click',onClickItem);
     clearBtn.addEventListener('click',clearItems);
-    cancelbtn.addEventListener('click',onClickCancel);
     itemFilter.addEventListener('input',filterItems);
     document.addEventListener('DOMContentLoaded',displayItems);
 
