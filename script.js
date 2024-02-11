@@ -4,7 +4,10 @@ const itemList= document.getElementById('item-list');
 const clearBtn = document.getElementById('clear');
 const itemFilter = document.getElementById('filter');
 const formBtn = itemForm.querySelector('button');
+const cancelbtn = document.querySelector('#cancel')
 let isEditMode = false;
+
+console.log(`form btn ${formBtn.innerHTML} and cancel btn ${cancelbtn.innerHTML}`)
 
 console.log(clearBtn)
 
@@ -26,7 +29,7 @@ const onAddItemSubmit = (e) => {
 
     //check for edit mode
     if(isEditMode) {
-        const  itemToEdit = itemList.querySelector('.edit-mode');
+        const itemToEdit = itemList.querySelector('.edit-mode');
 
         removeItemFromStorage(itemToEdit.textContent);
         itemToEdit.classList.remove('edit-mode');
@@ -120,6 +123,7 @@ function setItemToEdit(item){
     itemList.querySelectorAll('li').forEach(i => i.classList.remove('edit-mode'));//only the selected li should turn the color into red, when another element is selected prev selected all li's must go bck to prev state i.e. black
     item.classList.add('edit-mode');
     formBtn.innerHTML = '<i class = "fa-solid fa-pen"></i>  Update Item';
+    
     formBtn.style.backgroundColor = '#228B22';
     itemInput.value = item.textContent; //the selected attribute comes to the text field
 }
@@ -190,7 +194,7 @@ function checkUI() { //clear button and the filter must only be visible when the
 
     itemInput.value = '';
     
-    const items =itemList.querySelectorAll('li');
+    const items = itemList.querySelectorAll('li');
     if(items.length === 0){
         clearBtn.style.display = 'none';
         itemFilter.style.display = 'none';
@@ -214,6 +218,7 @@ function init(){
     itemForm.addEventListener('submit',onAddItemSubmit);
     itemList.addEventListener('click',onClickItem);
     clearBtn.addEventListener('click',clearItems);
+    cancelbtn.addEventListener('click',onClickCancel);
     itemFilter.addEventListener('input',filterItems);
     document.addEventListener('DOMContentLoaded',displayItems);
 
