@@ -177,6 +177,7 @@ function clearItems(){
 
 function cancelOperation(){
     itemInput.value = ''; //when cancel is hit simply delete the itemInput (whatever the user has typed)
+    itemInput.focus(); // when cancel is hit, focus goes back to the form
 }
 
 function filterItems(e) {
