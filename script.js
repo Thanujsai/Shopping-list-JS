@@ -176,7 +176,7 @@ function clearItems(){
 }
 
 function cancelOperation(){
-    itemInput.value = '';
+    itemInput.value = ''; //when cancel is hit simply delete the itemInput (whatever the user has typed)
 }
 
 function filterItems(e) {
